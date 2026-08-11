@@ -45,7 +45,7 @@ jobs:
           HOMEBREW_GIT_COMMITTER_NAME: ${{ steps.git-setup.outputs.name }}
           HOMEBREW_GIT_COMMITTER_EMAIL: ${{ steps.git-setup.outputs.email }}
           PULL_REQUEST: ${{ github.event.workflow_run.pull_requests[0].number }}
-        run: brew pr-pull --debug --tap="$GITHUB_REPOSITORY" --head-sha="$HEAD_SHA" "$PULL_REQUEST"
+        run: brew pr-pull --debug --tap="$GITHUB_REPOSITORY" --head-sha="$HEAD_SHA" --workflows=test-se-sshctl.yml "$PULL_REQUEST"
 
       - name: Push Formula and bottle metadata
         uses: Homebrew/actions/git-try-push@fd832223f9f99ebf0244dd20658680e5d4aca049 # 2026.08.03.2
