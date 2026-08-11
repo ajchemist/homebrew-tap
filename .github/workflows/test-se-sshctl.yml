@@ -39,7 +39,8 @@ jobs:
 
       - run: brew test-bot --only-setup
 
-      - run: brew test-bot --only-tap-syntax
+      - name: Parse all Formulae
+        run: brew readall --aliases --os=all --arch=all ajchemist/tap
 
       - name: Base64-encode GITHUB_TOKEN for bottle downloads
         id: base64-encode
