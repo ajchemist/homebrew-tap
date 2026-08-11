@@ -1,0 +1,31 @@
+name: Test se-sshctl Formula
+
+on:
+  pull_request:
+    paths:
+      - se-sshctl.rb
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  test-formula:
+    runs-on: macos-latest
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: 1
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Use pull request checkout as a local tap
+        run: brew tap ajchemist/tap "file://$GITHUB_WORKSPACE"
+
+      - name: Audit and style
+        run: |
+          brew audit --strict --online ajchemist/tap/se-sshctl
+          brew style --formula ajchemist/tap/se-sshctl
+
+      - name: Build, install, and test
+        run: |
+          brew install --build-from-source ajchemist/tap/se-sshctl
+          brew test ajchemist/tap/se-sshctl
