@@ -7,6 +7,11 @@ class SeSshctl < Formula
   sha256 "2dd93b3218b90913fc739bfe6b0e0246ab2a1cca9ae6d1bc993b72f5bb3930ef"
   license "MIT"
 
+  bottle do
+    root_url "https://ghcr.io/v2/ajchemist/tap"
+    sha256 cellar: :any_skip_relocation, arm64_tahoe: "9f935566d63d822dd2a9c2fa39438c9bada0310d0e632bf41da02be5f1f1af4e"
+  end
+
   depends_on macos: :tahoe
 
   def install
