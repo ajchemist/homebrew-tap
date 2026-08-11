@@ -33,12 +33,13 @@ jobs:
           token: ${{ steps.app-token.outputs.token }}
 
       - name: Validate release event
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           [[ "$TAG" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]
           [[ "$RELEASE_COMMIT" =~ ^[0-9a-f]{40}$ ]]
           [[ "$FORMULA_LICENSE" =~ ^[A-Za-z0-9.+-]+$ ]]
-          curl --fail --silent --show-error --location \
-            "https://api.github.com/repos/ajchemist/se-sshctl/releases/tags/$TAG" >/dev/null
+          gh api "repos/ajchemist/se-sshctl/releases/tags/$TAG" >/dev/null
 
       - name: Generate Formula from immutable tag
         run: |
