@@ -6,26 +6,61 @@ on:
       - se-sshctl.rb
   workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
+
+defaults:
+  run:
+    shell: bash -xeuo pipefail {0}
 
 jobs:
-  test-formula:
-    runs-on: macos-latest
-    env:
-      HOMEBREW_NO_AUTO_UPDATE: 1
+  test-bot:
+    runs-on: macos-26
+    permissions:
+      actions: read
+      checks: read
+      contents: read
+      packages: read
+      pull-requests: read
     steps:
-      - uses: actions/checkout@v6
+      - name: Set up Homebrew
+        id: set-up-homebrew
+        uses: Homebrew/actions/setup-homebrew@fd832223f9f99ebf0244dd20658680e5d4aca049 # 2026.08.03.2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Use pull request checkout as a local tap
-        run: brew tap ajchemist/tap "file://$GITHUB_WORKSPACE"
+      - name: Cache Homebrew Bundler RubyGems
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ${{ steps.set-up-homebrew.outputs.gems-path }}
+          key: macos-26-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
+          restore-keys: macos-26-rubygems-
 
-      - name: Audit and style
+      - run: brew test-bot --only-cleanup-before
+
+      - run: brew test-bot --only-setup
+
+      - run: brew test-bot --only-tap-syntax
+
+      - name: Base64-encode GITHUB_TOKEN for bottle downloads
+        id: base64-encode
+        if: github.event_name == 'pull_request'
+        env:
+          TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          brew audit --strict --online ajchemist/tap/se-sshctl
-          brew style --formula ajchemist/tap/se-sshctl
+          base64_token=$(echo -n "${TOKEN}" | base64 | tr -d "\n")
+          echo "::add-mask::${base64_token}"
+          echo "token=${base64_token}" >> "${GITHUB_OUTPUT}"
 
-      - name: Build, install, and test
-        run: |
-          brew install --build-from-source ajchemist/tap/se-sshctl
-          brew test ajchemist/tap/se-sshctl
+      - name: Build and test bottle
+        if: github.event_name == 'pull_request'
+        env:
+          HOMEBREW_DOCKER_REGISTRY_TOKEN: ${{ steps.base64-encode.outputs.token }}
+        run: brew test-bot --only-formulae --root-url=https://ghcr.io/v2/ajchemist/tap
+
+      - name: Upload bottle artifact
+        if: always() && github.event_name == 'pull_request'
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bottles_macos-26
+          path: '*.bottle.*'
+          if-no-files-found: error

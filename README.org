@@ -15,9 +15,10 @@
 : brew install ajchemist/tap/se-sshctl
 
 Stable releases are received from =ajchemist/se-sshctl= through an authenticated
-=repository_dispatch=. Each release opens a Formula update PR, runs Homebrew audit,
-style, source installation, and tests, then auto-merges after the protected
-=test-formula= check succeeds.
+=repository_dispatch=. Each release opens a Formula update PR. Homebrew's
+=test-bot= builds and tests the source fallback and a macOS 26 bottle. After that
+exact PR commit passes, =brew pr-pull= publishes the bottle to GitHub Packages and
+commits its checksums to the Formula on =master=.
 
 The =se-sshctl= release workflow and this tap both require =HOMEBREW_APP_ID= as a
 repository variable and =HOMEBREW_APP_PRIVATE_KEY= as a repository secret.

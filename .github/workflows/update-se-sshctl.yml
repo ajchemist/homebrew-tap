@@ -73,7 +73,7 @@ jobs:
           FORMULA
           echo "branch=$branch" >> "$GITHUB_ENV"
 
-      - name: Open tested update PR
+      - name: Open bottle update PR
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
@@ -94,4 +94,3 @@ jobs:
               --body "Automated Formula update for ajchemist/se-sshctl@$TAG ($RELEASE_COMMIT).")
             pr=${pr_url##*/}
           fi
-          gh pr merge "$pr" --auto --squash
