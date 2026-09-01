@@ -67,8 +67,11 @@ jobs:
             end
 
             test do
+              assert_equal "se-sshctl #{version}", shell_output("#{bin}/se-sshctl --version").strip
+
               report = JSON.parse(shell_output("#{bin}/se-sshctl doctor --json"))
-              assert_equal 1, report.fetch("schemaVersion")
+              assert_equal version.to_s, report.fetch("seSSHCTL")
+              assert_operator report.fetch("schemaVersion"), :>=, 1
             end
           end
           FORMULA
