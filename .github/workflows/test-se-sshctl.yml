@@ -13,14 +13,10 @@ defaults:
     shell: bash -xeuo pipefail {0}
 
 jobs:
-  test-bot:
+  test:
     runs-on: macos-26
     permissions:
-      actions: read
-      checks: read
       contents: read
-      packages: read
-      pull-requests: read
     steps:
       - name: Set up Homebrew
         id: set-up-homebrew
@@ -35,30 +31,12 @@ jobs:
           key: macos-26-rubygems-${{ steps.set-up-homebrew.outputs.gems-hash }}
           restore-keys: macos-26-rubygems-
 
-      - run: brew test-bot --only-cleanup-before
+      - run: brew trust --formula ajchemist/tap/se-sshctl
 
-      - run: brew test-bot --only-setup
+      - run: brew style ajchemist/tap/se-sshctl
 
-      - name: Base64-encode GITHUB_TOKEN for bottle downloads
-        id: base64-encode
-        if: github.event_name == 'pull_request'
-        env:
-          TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          base64_token=$(echo -n "${TOKEN}" | base64 | tr -d "\n")
-          echo "::add-mask::${base64_token}"
-          echo "token=${base64_token}" >> "${GITHUB_OUTPUT}"
+      - run: brew audit --strict ajchemist/tap/se-sshctl
 
-      - name: Build and test bottle
-        if: github.event_name == 'pull_request'
-        env:
-          HOMEBREW_DOCKER_REGISTRY_TOKEN: ${{ steps.base64-encode.outputs.token }}
-        run: brew test-bot --only-formulae --root-url=https://ghcr.io/v2/ajchemist/tap
+      - run: brew install --formula --verbose ajchemist/tap/se-sshctl
 
-      - name: Upload bottle artifact
-        if: always() && github.event_name == 'pull_request'
-        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
-        with:
-          name: bottles_macos-26
-          path: '*.bottle.*'
-          if-no-files-found: error
+      - run: brew test --verbose ajchemist/tap/se-sshctl
