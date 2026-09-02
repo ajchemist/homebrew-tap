@@ -4,7 +4,7 @@ class SeSshctl < Formula
   desc "Inspect Apple's CryptoTokenKit-backed SSH path"
   homepage "https://github.com/ajchemist/se-sshctl"
   url "https://github.com/ajchemist/se-sshctl/releases/download/v0.3.0/se-sshctl-0.3.0-macos-universal.tar.gz"
-  sha256 "f357930db1d97141910e87553b9dbe085875a193a0936adeb023d7b70eb018cb"
+  sha256 "5415a613ac0e417005c0819753160ee14f08649e5d8a0355501a42b96760c138"
   license "MIT"
 
   depends_on macos: :tahoe
