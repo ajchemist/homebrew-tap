@@ -3,8 +3,8 @@ require "json"
 class SeSshctl < Formula
   desc "Inspect Apple's CryptoTokenKit-backed SSH path"
   homepage "https://github.com/ajchemist/se-sshctl"
-  url "https://github.com/ajchemist/se-sshctl/releases/download/v0.3.0/se-sshctl-0.3.0-macos-universal.tar.gz"
-  sha256 "5415a613ac0e417005c0819753160ee14f08649e5d8a0355501a42b96760c138"
+  url "https://github.com/ajchemist/se-sshctl/releases/download/v0.3.1/se-sshctl-0.3.1-macos-universal.tar.gz"
+  sha256 "dc6995e6dde26a486ecaffc095323ca6fa251212878499b2c02b3c3a4bad3c9e"
   license "MIT"
 
   depends_on macos: :tahoe
